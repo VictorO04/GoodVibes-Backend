@@ -6,3 +6,9 @@ export const findAll = async () => {
         orderBy: { sender: "asc" }
     });
 }
+
+export const findOne = async (id) => {
+    return await prisma.confessions.findUnique({
+        where: { id: Number(id) }
+    });
+}
