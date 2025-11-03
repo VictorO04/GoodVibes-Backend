@@ -28,12 +28,12 @@ export const listAll = async (req, res) => {
 export const listOne = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const confession = await confessionsModel.listOne(id);
+        const confession = await confessionsModel.findOne(id);
 
         if (!confession) {
             return res.status(404).json({
                 error: "confession not founded",
-                message: "Check de confession id",
+                message: "Check the confession id",
                 id: id
             });
         }
