@@ -8,19 +8,21 @@ datasource db {
 }
 
 model confessions {
-  id           Int    @id @default(autoincrement())
-  message      String @db.VarChar(500)
-  message_type String @db.VarChar(50)
-  sender       String @db.VarChar(50)
-  id_users     Int?
-  users        users? @relation(fields: [id_users], references: [id_users], onDelete: NoAction, onUpdate: NoAction, map: "fk_confessions_users")
+  id                                 Int     @id @default(autoincrement())
+  message                            String? @db.VarChar(500)
+  message_type                       String? @db.VarChar(50)
+  recipient                          Int?
+  sender                             Int?
+  users_confessions_recipientTousers users?  @relation("confessions_recipientTousers", fields: [recipient], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_recipient")
+  users_confessions_senderTousers    users?  @relation("confessions_senderTousers", fields: [sender], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sender")
 }
 
 model users {
-  id_users    Int           @id @default(autoincrement())
-  username    String        @db.VarChar(13)
-  email       String        @db.VarChar(50)
-  password    String?       @db.VarChar(12)
-  anonymous   Boolean
-  confessions confessions[]
+  id                                       Int           @id @default(autoincrement())
+  username                                 String        @db.VarChar(13)
+  email                                    String        @db.VarChar(50)
+  password                                 String?       @db.VarChar(50)
+  anonymous                                Boolean?
+  confessions_confessions_recipientTousers confessions[] @relation("confessions_recipientTousers")
+  confessions_confessions_senderTousers    confessions[] @relation("confessions_senderTousers")
 }
