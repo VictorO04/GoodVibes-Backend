@@ -9,7 +9,7 @@ dotenv.config();
 const serverPort = process.env.PORT;
 
 app.get('/', (req, res) => {
-    res.send("Servidor online");
+    res.send("Servidor online!");
 });
 
 app.use("/confissoes", confessionsRoutes);
