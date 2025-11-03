@@ -5,5 +5,6 @@ const router = Router();
 
 router.get("/", confessionsController.listAll);
 router.get("/:id", confessionsController.listOne);
+router.post("/", confessionsController.create);
 
 export default router;
