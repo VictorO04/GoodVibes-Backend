@@ -8,7 +8,7 @@ dotenv.config();
 const serverPort = process.env.PORT;
 
 app.get('/', (req, res) => {
-    res.send("Servidor online");
+    res.send("Servidor onlin");
 });
 
 app.listen(serverPort, () => {
