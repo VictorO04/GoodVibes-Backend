@@ -50,3 +50,33 @@ export const listOne = async (req, res) => {
         })
     }
 }
+
+export const create = async (req, res) => {
+    try {
+        const { message, message_type, recipient, sender } = req.body;
+        const data = req.body;
+
+        const requiredFields = [message, message_type, recipient, sender];
+
+        const missing = requiredFields.filter((field) => !data[field]);
+
+        if (missing.length > 0) {
+            return res.status(400).json({
+                error: `The following fields are required: ${missing.join(", ")}`
+            });
+        }
+
+        const newConfession = await confessionsModel.create(req.body);
+
+        res.status(201).json({
+            message: "confession added successfully",
+            confession: newConfession
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "internal server error",
+            details: error.message,
+            status: 500
+        })
+    }
+}
