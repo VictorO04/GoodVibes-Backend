@@ -24,3 +24,29 @@ export const listAll = async (req, res) => {
         });
     }
 }
+
+export const listOne = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const confession = await confessionsModel.findOne(id);
+
+        if (!confession) {
+            return res.status(404).json({
+                error: "confession not founded",
+                message: "Check the confession id",
+                id: id
+            });
+        }
+
+        res.status(200).json({
+            message: "confession founded",
+            confession
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "internal server error",
+            details: error.message,
+            status: 500
+        })
+    }
+}

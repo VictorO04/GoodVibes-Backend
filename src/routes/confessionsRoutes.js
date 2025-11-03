@@ -4,5 +4,6 @@ import * as confessionsController from "./../controllers/confessionsController.j
 const router = Router();
 
 router.get("/", confessionsController.listAll);
+router.get("/:id", confessionsController.listOne);
 
 export default router;
