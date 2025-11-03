@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export const findAll = async (id) => {
+export const findAll = async () => {
     return await prisma.confessions.findMany({
-        orderBy: { date: "asc" }
+        orderBy: { sender: "asc" }
     });
 }
