@@ -107,3 +107,32 @@ export const deleteConfession = async (req, res) => {
         });
     }
 }
+
+export const updateConfession = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const data = req.body;
+
+        const confessionExists = await confessionsModel.findOneConfession(id);
+
+        if (!confessionExists) {
+            return res.status(404).json({
+                error: "confession not founded",
+                id: id
+            });
+        }
+
+        const confessionUpdated = await confessionsModel.updateConfession(id, data);
+
+        res.status(200).json({
+            message: "confession succesfully updated",
+            confession: confessionUpdated
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "internal server error",
+            details: error.message,
+            status: 500
+        });
+    }
+}
