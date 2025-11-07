@@ -1,0 +1,31 @@
+{
+  "name": "goodvibes",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
+    "studio": "npx prisma studio"
+  },
+  "keywords": [
+    "chainsaw turtle",
+    "tartaruga",
+    "good",
+    "vibes",
+    "goodvibes",
+    "boas"
+  ],
+  "author": "Victor e Murilo",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.18.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
