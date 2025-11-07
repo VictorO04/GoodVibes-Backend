@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import confessionsRoutes from "./src/routes/confessionsRoutes.js";
+import usersRoutes from "./src/routes/usersRoutes.js"
 
 const app = express();
 app.use(express.json());
@@ -13,6 +14,7 @@ app.get('/', (req, res) => {
 });
 
 app.use("/confissoes", confessionsRoutes);
+app.use("/usuarios", usersRoutes)
 
 app.listen(serverPort, () => {
     console.log(`-- Servidor aberto em: http://localhost:${serverPort}`);
