@@ -3,7 +3,7 @@ import * as confessionsController from "./../controllers/confessionsController.j
 
 const router = Router();
 
-router.get("/", confessionsController.listAll);
-router.get("/:id", confessionsController.listOne);
+router.get("/", confessionsController.listAllConfessions);
+router.get("/:id", confessionsController.listOneConfession);
 
 export default router;
