@@ -53,35 +53,23 @@ export const listOneConfession = async (req, res) => {
 
 export const createConfession = async (req, res) => {
     try {
-        
-    } catch (error) {
-        res.status(500).json({
-            error: "internal server error",
-            details: error.message,
-            status: 500
-        });
-    }
-}
-
-export const create = async (req, res) => {
-    try {
         const { message, message_type, recipient, sender } = req.body;
+
         const data = req.body;
+        const requiredfields = ["message", "message_type", "recipient", "sender"];
 
-        const requiredFields = [message, message_type, recipient, sender];
-
-        const missing = requiredFields.filter((field) => !data[field]);
+        const missing = requiredfields.filter((field) => !data[field]);
 
         if (missing.length > 0) {
             return res.status(400).json({
-                error: `The following fields are required: ${missing.join(", ")}`
+                error: `The following fields are required: ${missing.join(", ")}.`
             });
         }
 
-        const newConfession = await confessionsModel.create(req.body);
+        const newConfession = await confessionsModel.createConfession(req.body);
 
         res.status(201).json({
-            message: "confession added successfully",
+            message: "New confession created",
             confession: newConfession
         });
     } catch (error) {
@@ -89,6 +77,6 @@ export const create = async (req, res) => {
             error: "internal server error",
             details: error.message,
             status: 500
-        })
+        });
     }
 }
