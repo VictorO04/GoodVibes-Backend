@@ -29,3 +29,15 @@ export const deleteConfession = async (id) => {
         where: { id: Number(id) }
     });
 }
+
+export const updateConfession = async (id, data) => {
+    return await prisma.confessions.update({
+        where: { id: Number(id) },
+        data: {
+            ...(data.message && {message: data.message}),
+            ...(data.message_type && {message_type: data.message_type}),
+            ...(data.recipient && {recipient: data.recipient}),
+            ...(data.sender && {sender: data.sender})
+        }
+    });
+}
