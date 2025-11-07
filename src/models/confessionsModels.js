@@ -12,3 +12,14 @@ export const findOne = async (id) => {
         where: { id: Number(id) }
     });
 }
+
+export const create = async (data) => {
+    return await prisma.confessions.create({
+        data: {
+            message: data.message,
+            message_type: data.message_type,
+            recipient: data.recipient,
+            sender: data.sender
+        }
+    });
+}
