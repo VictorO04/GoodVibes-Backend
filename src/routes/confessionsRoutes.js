@@ -6,5 +6,6 @@ const router = Router();
 router.get("/", confessionsController.listAllConfessions);
 router.get("/:id", confessionsController.listOneConfession);
 router.post("/", confessionsController.createConfession);
+router.delete("/:id", confessionsController.deleteConfession);
 
 export default router;
