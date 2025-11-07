@@ -23,3 +23,9 @@ export const createConfession = async (data) => {
         }
     });
 }
+
+export const deleteConfession = async (id) => {
+    return await prisma.confessions.delete({
+        where: { id: Number(id) }
+    });
+}

@@ -62,15 +62,42 @@ export const createConfession = async (req, res) => {
 
         if (missing.length > 0) {
             return res.status(400).json({
-                error: `The following fields are required: ${missing.join(", ")}.`
+                error: `the following fields are required: ${missing.join(", ")}.`
             });
         }
 
         const newConfession = await confessionsModel.createConfession(req.body);
 
         res.status(201).json({
-            message: "New confession created",
+            message: "new confession created",
             confession: newConfession
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "internal server error",
+            details: error.message,
+            status: 500
+        });
+    }
+}
+
+export const deleteConfession = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const confessionExists = await confessionsModel.findOneConfession(id);
+
+        if (!confessionExists) {
+            return res.status(404).json({
+                error: "confession not founded",
+                id: id
+            });
+        }
+
+        await confessionsModel.deleteConfession(id);
+
+        res.status(200).json({
+            message: "confession successfully deleted",
+            foodRemoved: confessionExists
         });
     } catch (error) {
         res.status(500).json({
