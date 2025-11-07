@@ -22,6 +22,12 @@ async function main() {
         message_type:"Romantica",
         recipient:2,
         sender:1,
+    },
+    {
+        message: "Dedico a musica congratulations para o amor da minha vida victor",
+        message_type:"Romantica",
+        recipient:2,
+        sender:1,
     }
   ];
 
