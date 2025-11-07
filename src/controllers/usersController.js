@@ -24,3 +24,28 @@ export const listAllUsers = async (req, res) => {
     });
   }
 };
+
+export const listOneUser = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const user = await usersModels.findOneUser(id);
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not founded",
+        message: "Check the id again",
+        id: id,
+      });
+    }
+    return res.status(200).json({
+      message: "id founded",
+      data: user
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+      datails: error.message,
+      status: 500,
+    });
+  }
+};

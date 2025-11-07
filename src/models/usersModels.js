@@ -1,8 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
- 
- export const findAllUsers = async () => {
-    return await prisma.users.findMany({
-        orderBy: {username : "asc"}
-    })
-}
+
+export const findAllUsers = async () => {
+  return await prisma.users.findMany({
+    orderBy: { username: "asc" },
+  });
+};
+
+export const findOneUser = async (id) => {
+  return await prisma.users.findUnique({
+    where: { id: Number(id) },
+  });
+};
