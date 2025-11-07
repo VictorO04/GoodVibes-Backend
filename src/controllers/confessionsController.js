@@ -1,8 +1,8 @@
 import * as confessionsModel from "./../models/confessionsModels.js";
 
-export const listAll = async (req, res) => {
+export const listAllConfessions = async (req, res) => {
     try {
-        const confessions = await confessionsModel.findAll();
+        const confessions = await confessionsModel.findAllConfessions();
 
         if (!confessions || confessions.length === 0) {
             return res.status(404).json({
@@ -25,10 +25,10 @@ export const listAll = async (req, res) => {
     }
 }
 
-export const listOne = async (req, res) => {
+export const listOneConfession = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const confession = await confessionsModel.findOne(id);
+        const confession = await confessionsModel.findOneConfession(id);
 
         if (!confession) {
             return res.status(404).json({
@@ -47,6 +47,36 @@ export const listOne = async (req, res) => {
             error: "internal server error",
             details: error.message,
             status: 500
-        })
+        });
+    }
+}
+
+export const createConfession = async (req, res) => {
+    try {
+        const { message, message_type, recipient, sender } = req.body;
+
+        const data = req.body;
+        const requiredfields = ["message", "message_type", "recipient", "sender"];
+
+        const missing = requiredfields.filter((field) => !data[field]);
+
+        if (missing.length > 0) {
+            return res.status(400).json({
+                error: `The following fields are required: ${missing.join(", ")}.`
+            });
+        }
+
+        const newConfession = await confessionsModel.createConfession(req.body);
+
+        res.status(201).json({
+            message: "New confession created",
+            confession: newConfession
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "internal server error",
+            details: error.message,
+            status: 500
+        });
     }
 }
