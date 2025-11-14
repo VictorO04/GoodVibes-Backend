@@ -66,6 +66,28 @@ export const createConfession = async (req, res) => {
             });
         }
 
+        const badWords = [
+            "nigga", "monkey", "fdp", "pau", "cu", "arrombado", "baleia", "maldito", "escravo","corno", "viado", "baitola", "viadinho", "macaco", "preto"
+        ];
+        
+        const containsBadWords = badWords.some((word) => message.toLowerCase().includes(word));
+        
+        if (containsBadWords) {
+            return res.status(400).json({
+                error: "The message includes bad words"
+            });
+        }
+        
+        const messageTypes = ["romântica", "amizade", "motivacional", "comédia", "reflexiva"];
+        
+        const okMessageType = messageTypes.some((word) => message_type.toLowerCase().includes(word));
+
+        if (!okMessageType) {
+            return res.status(400).json({
+                error: `tipos de mensagem: ${messageTypes.join(", ")}`
+            });
+        }
+
         const newConfession = await confessionsModel.createConfession(req.body);
 
         res.status(201).json({
