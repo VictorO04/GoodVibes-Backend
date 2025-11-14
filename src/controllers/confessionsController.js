@@ -67,14 +67,24 @@ export const createConfession = async (req, res) => {
         }
 
         const badWords = [
-
-        ]
-
-        const containsBadWords = badWords.some((word) => message.toLowerCase().includes(word))
-
+            "nigga", "monkey", "fdp", "pau", "cu", "arrombado", "baleia", "maldito", "escravo","corno", "viado", "baitola", "viadinho", "macaco", "preto"
+        ];
+        
+        const containsBadWords = badWords.some((word) => message.toLowerCase().includes(word));
+        
         if (containsBadWords) {
             return res.status(400).json({
                 error: "The message includes bad words"
+            });
+        }
+        
+        const messageTypes = []
+        
+        const okMessageType = messageTypes.some((word) => message_type.toLowerCase().includes(okMessageType));
+
+        if (okMessageType) {
+            return res.status(400).json({
+                error: ``
             });
         }
 
