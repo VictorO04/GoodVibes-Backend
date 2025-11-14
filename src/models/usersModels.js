@@ -12,3 +12,21 @@ export const findOneUser = async (id) => {
     where: { id: Number(id) },
   });
 };
+
+
+export const createUser = async (data) => {
+  return await prisma.users.create({
+    data: {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      anonymous: data.anonymous
+    }
+  })
+};
+
+export const deleteUser = async (id) => {
+  return await prisma.users.delete({
+    where: { id:Number(id) }
+  });
+}
