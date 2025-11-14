@@ -44,7 +44,7 @@ export const listOneUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Internal server error",
-      datails: error.message,
+      details: error.message,
       status: 500,
     });
   }
