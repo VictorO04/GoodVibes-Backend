@@ -119,7 +119,7 @@ export const deleteConfession = async (req, res) => {
 
         res.status(200).json({
             message: "confession successfully deleted",
-            foodRemoved: confessionExists
+            confessionRemoved: confessionExists
         });
     } catch (error) {
         res.status(500).json({
