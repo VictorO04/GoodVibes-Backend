@@ -23,4 +23,10 @@ export const createUser = async (data) => {
       anonymous: data.anonymous
     }
   })
+};
+
+export const deleteUser = async (id) => {
+  return await prisma.users.delete({
+    where: { id:Number(id) }
+  });
 }

@@ -39,12 +39,42 @@ export const listOneUser = async (req, res) => {
     }
     return res.status(200).json({
       message: "id founded",
-      data: user
+      data: user,
     });
   } catch (error) {
     res.status(500).json({
       message: "Internal server error",
       datails: error.message,
+      status: 500,
+    });
+  }
+};
+
+export const createUser = async (req, res) => {
+  try {
+    const { username, email, password, anonymous } = req.body;
+
+    const data = req.body;
+    const missingFields = ["username", "email", "password", "anonymous"];
+
+    const lost = missingFields.filter((field) => !data[field]);
+
+    if (lost.length > 0) {
+      return res.status(400).json({
+        error: `the following fields are required: ${lost.join(", ")}.`,
+      });
+    }
+
+    const newUser = await usersModels.createUser(req.body);
+
+    res.status(201).json({
+      message: "New user created",
+      user: newUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "internal server error",
+      details: error.message,
       status: 500,
     });
   }
