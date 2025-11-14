@@ -16,7 +16,7 @@ async function main() {
       anonymous: false,
     },
   ];
-  
+
   const confession = [
   { message: "Você é meu sorriso preferido.", message_type: "Romantica", sender: 1, recipient: 87 },
   { message: "Sua amizade ilumina meus dias.", message_type: "Amizade", sender: 2, recipient: 14 },
@@ -135,4 +135,3 @@ main()
     console.error(e);
     await prisma.$disconnect(process.exit(1));
   });
-

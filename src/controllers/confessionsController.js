@@ -78,13 +78,13 @@ export const createConfession = async (req, res) => {
             });
         }
         
-        const messageTypes = []
+        const messageTypes = ["romântica", "amizade", "motivacional", "comédia", "reflexiva"];
         
-        const okMessageType = messageTypes.some((word) => message_type.toLowerCase().includes(okMessageType));
+        const okMessageType = messageTypes.some((word) => message_type.toLowerCase().includes(word));
 
-        if (okMessageType) {
+        if (!okMessageType) {
             return res.status(400).json({
-                error: ``
+                error: `tipos de mensagem: ${messageTypes.join(", ")}`
             });
         }
 
