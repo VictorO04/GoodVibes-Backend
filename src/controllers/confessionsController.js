@@ -66,6 +66,18 @@ export const createConfession = async (req, res) => {
             });
         }
 
+        const badWords = [
+
+        ]
+
+        const containsBadWords = badWords.some((word) => message.toLowerCase().includes(word))
+
+        if (containsBadWords) {
+            return res.status(400).json({
+                error: "The message includes bad words"
+            });
+        }
+
         const newConfession = await confessionsModel.createConfession(req.body);
 
         res.status(201).json({
