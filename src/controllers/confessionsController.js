@@ -155,27 +155,77 @@ export const updateConfession = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = req.body;
+    const { message, message_type, recipient, sender } = req.body;
 
     const confessionExists = await confessionsModel.findOneConfession(id);
 
     if (!confessionExists) {
       return res.status(404).json({
-        error: "confession not founded",
-        id: id,
+        total: 0,
+        mensagem: "Não encontrado",
+        detalhes: "Nenhuma confissão foi encontrada para atualizar",
+        dados: null,
+      });
+    }
+
+    const requiredfields = ["message", "message_type", "recipient", "sender"];
+
+    const missing = requiredfields.filter((field) => !data[field]);
+
+    if (missing.length > 0) {
+      return res.status(400).json({
+        total: 0,
+        mensagem: `Os seguintes campos são necessários: ${missing.join(", ")}.`,
+        dados: null
+      });
+    }
+
+    const normalizedMessage = message.trim().toLowerCase();
+    const normalizedType = message_type.trim().toLowerCase();
+
+    const badWords = process.env.BAD_WORDS.split(",").map(word => word.trim().toLowerCase());
+
+    const containsBadWords = badWords.some((word) =>
+      normalizedMessage.includes(word.toLowerCase())
+    );
+
+    if (containsBadWords) {
+      return res.status(400).json({
+        total: 0,
+        mensagem: "A mensagem contém palavras ofensivas",
+        dados: null
+      });
+    }
+
+    const messageTypes = [
+      "romântica",
+      "amizade",
+      "motivacional",
+      "comédia",
+      "reflexiva",
+    ];
+
+    const okMessageType = messageTypes.includes(normalizedType);
+
+    if (!okMessageType) {
+      return res.status(400).json({
+        total: 0,
+        mensagem: `OS tipos de mensagem que existem são: ${messageTypes.join(", ")}`,
+        dados: null
       });
     }
 
     const confessionUpdated = await confessionsModel.updateConfession(id, data);
 
     res.status(200).json({
-      message: "confession succesfully updated",
-      confession: confessionUpdated,
+      total: 1,
+      mensagem: "Confissão atualizada com sucesso",
+      dados: confessionUpdated
     });
   } catch (error) {
     res.status(500).json({
-      error: "internal server error",
-      details: error.message,
-      status: 500,
+      mensagem: "Erro interno de servidor",
+      detalhes: error.message,
     });
   }
 };
