@@ -5,6 +5,7 @@ CREATE TABLE "confessions" (
     "message_type" VARCHAR(50),
     "recipient" INTEGER,
     "sender" INTEGER,
+    "date" DATE DEFAULT CURRENT_DATE,
 
     CONSTRAINT "confessions_pkey" PRIMARY KEY ("id")
 );

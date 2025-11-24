@@ -7,7 +7,7 @@ export const findAllConfessions = async () => {
     });
 }
 
-export const findOneConfession = async (id) => {
+export const findConfessionById = async (id) => {
     return await prisma.confessions.findUnique({
         where: { id: Number(id) }
     });

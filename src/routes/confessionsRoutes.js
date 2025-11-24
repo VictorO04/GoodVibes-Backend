@@ -3,8 +3,8 @@ import * as confessionsController from "./../controllers/confessionsController.j
 
 const router = Router();
 
-router.get("/", confessionsController.listAllConfessions);
-router.get("/:id", confessionsController.listOneConfession);
+router.get("/", confessionsController.getAllConfessions);
+router.get("/:id", confessionsController.getConfessionById);
 router.post("/", confessionsController.createConfession);
 router.delete("/:id", confessionsController.deleteConfession);
 router.put("/:id", confessionsController.updateConfession);
