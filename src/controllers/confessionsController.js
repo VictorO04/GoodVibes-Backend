@@ -1,10 +1,13 @@
 import * as confessionsModel from "./../models/confessionsModels.js";
+import dotenv from  "dotenv";
+
+dotenv.config();
 
 export const getAllConfessions = async (req, res) => {
   try {
-    const confessions = await confessionsModel.findAllConfessions();
+    const data = await confessionsModel.findAllConfessions();
 
-    if (!confessions || confessions.length === 0) {
+    if (!data || data.length === 0) {
       return res.status(404).json({
         total: 0,
         mensagem: "Não encontrado",
@@ -12,13 +15,13 @@ export const getAllConfessions = async (req, res) => {
         dados: null,
       });
     }
-    res.status(200).json({
-      total: confessions.length,
+    return res.status(200).json({
+      total: data.length,
       mensagem: "Confissões encontradas com sucesso",
-      confessions,
+      dados: data,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       mensagem: "Erro interno de servidor",
       detalhes: error.message,
     });
@@ -28,9 +31,9 @@ export const getAllConfessions = async (req, res) => {
 export const getConfessionById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const confession = await confessionsModel.findConfessionById(id);
+    const data = await confessionsModel.findConfessionById(id);
 
-    if (!confession) {
+    if (!data) {
       return res.status(404).json({
         total: 0,
         mensagem: "Não encontrado",
@@ -39,13 +42,13 @@ export const getConfessionById = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       total: 1,
       mensagem: `confissão com o id ${id} foi encontrada com sucesso`,
-      confession,
+      dados: data,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       mensagem: "Erro interno de servidor",
       detalhes: error.message,
     });
@@ -63,35 +66,26 @@ export const createConfession = async (req, res) => {
 
     if (missing.length > 0) {
       return res.status(400).json({
-        error: `the following fields are required: ${missing.join(", ")}.`,
+        total: 0,
+        mensagem: `Os seguintes campos são necessários: ${missing.join(", ")}.`,
+        dados: null
       });
     }
 
-    const badWords = [
-      "nigga",
-      "monkey",
-      "fdp",
-      "pau",
-      "cu",
-      "arrombado",
-      "baleia",
-      "maldito",
-      "escravo",
-      "corno",
-      "viado",
-      "baitola",
-      "viadinho",
-      "macaco",
-      "preto",
-    ];
+    const normalizedMessage = message.trim().toLowerCase();
+    const normalizedType = message_type.trim().toLowerCase();
+
+    const badWords = process.env.BAD_WORDS.split(",").map(word => word.trim().toLowerCase());
 
     const containsBadWords = badWords.some((word) =>
-      message.toLowerCase().includes(word)
+      normalizedMessage.includes(word.toLowerCase())
     );
 
     if (containsBadWords) {
       return res.status(400).json({
-        error: "The message includes bad words",
+        total: 0,
+        mensagem: "A mensagem contém palavras ofensivas",
+        dados: null
       });
     }
 
@@ -103,27 +97,27 @@ export const createConfession = async (req, res) => {
       "reflexiva",
     ];
 
-    const okMessageType = messageTypes.some((word) =>
-      message_type.toLowerCase().includes(word)
-    );
+    const okMessageType = messageTypes.includes(normalizedType);
 
     if (!okMessageType) {
       return res.status(400).json({
-        error: `tipos de mensagem: ${messageTypes.join(", ")}`,
+        total: 0,
+        mensagem: `OS tipos de mensagem que existem são: ${messageTypes.join(", ")}`,
+        dados: null
       });
     }
 
     const newConfession = await confessionsModel.createConfession(req.body);
 
-    res.status(201).json({
-      message: "new confession created",
-      confession: newConfession,
+    return res.status(201).json({
+      total: 1,
+      mensagem: "Confissão criada com sucesso",
+      dados: newConfession
     });
   } catch (error) {
-    res.status(500).json({
-      error: "internal server error",
-      details: error.message,
-      status: 500,
+    return res.status(500).json({
+      mensagem: "Erro interno de servidor",
+      detalhes: error.message,
     });
   }
 };
@@ -131,11 +125,13 @@ export const createConfession = async (req, res) => {
 export const deleteConfession = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const confessionExists = await confessionsModel.findOneConfession(id);
+    const confessionExists = await confessionsModel.findConfessionById(id);
 
     if (!confessionExists) {
       return res.status(404).json({
-        error: "confession not founded",
+        total: 0,
+        mensagem: "Não encontrado",
+        detalhes: "Nenhuma confissão foi encontrada para deletar",
         id: id,
       });
     }
@@ -143,14 +139,14 @@ export const deleteConfession = async (req, res) => {
     await confessionsModel.deleteConfession(id);
 
     res.status(200).json({
-      message: "confession successfully deleted",
-      confessionRemoved: confessionExists,
+      total: 1,
+      mensagem: "Confissão deletada com sucesso",
+      dados: data,
     });
   } catch (error) {
     res.status(500).json({
-      error: "internal server error",
-      details: error.message,
-      status: 500,
+      mensagem: "Erro interno de servidor",
+      detalhes: error.message,
     });
   }
 };
