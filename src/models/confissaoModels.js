@@ -13,19 +13,19 @@ export const findConfissaoById = async (id) => {
     });
 }
 
-export const createConfession = async (data) => {
-    return await prisma.confessions.create({
+export const createConfissao = async (data) => {
+    return await prisma.confissao.create({
         data: {
-            message: data.message,
-            message_type: data.message_type,
-            recipient: Number(data.recipient),
-            sender: Number(data.sender)
+            mensagem: data.mensagem,
+            tipoMensagem: data.tipoMensagem,
+            remetenteId: data.remetenteId ? Number(data.remetenteId) : null,
+            destinatarioId: data.destinatarioId ? Number(data.destinatarioId) : null
         }
     });
 }
 
-export const deleteConfession = async (id) => {
-    return await prisma.confessions.delete({
+export const deleteConfissao = async (id) => {
+    return await prisma.confissao.delete({
         where: { id: Number(id) }
     });
 }

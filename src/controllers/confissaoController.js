@@ -9,7 +9,7 @@ export const getAllConfissoes = async (req, res) => {
             mensagem: confissoes.length === 0
                 ? "Não há confissões na lista"
                 : "Lista de confissões encontrada",
-                confissoes
+            confissoes
         });
 
     } catch (error) {
@@ -57,81 +57,90 @@ export const getConfissaoByID = async (req, res) => {
     }
 }
 
-export const createConfession = async (req, res) => {
+export const createConfissao = async (req, res) => {
     try {
-        const { message, message_type, recipient, sender } = req.body;
-
         const data = req.body;
-        const requiredfields = ["message", "message_type", "recipient", "sender"];
+        const { mensagem, tipoMensagem, remetenteId, destinatarioId } = data;
 
-        const missing = requiredfields.filter((field) => !data[field]);
+        const camposObrigatorios = ["mensagem", "tipoMensagem", "remetenteId", "destinatarioId"];
 
-        if (missing.length > 0) {
+        const faltando = camposObrigatorios.filter((campo) => !data[campo] && data[campo] !== 0);
+
+        if (faltando.length > 0) {
             return res.status(400).json({
-                error: `the following fields are required: ${missing.join(", ")}.`
+                total: 0,
+                mensagem: `Os seguintes campos são obrigatórios:  ${faltando.join(", ")}`
             });
         }
 
-        const badWords = [
-            "nigga", "monkey", "fdp", "pau", "cu", "arrombado", "baleia", "maldito", "escravo","corno", "viado", "baitola", "viadinho", "macaco", "preto"
-        ];
+        const decodificado = Buffer.from(process.env.PALAVRAS_PROIBIDAS_BASE64, "base64").toString("utf-8");
         
-        const containsBadWords = badWords.some((word) => message.toLowerCase().includes(word));
+        const palavrasProibidas = decodificado.split(",").map(p => p.trim().toLowerCase());
+
+        const msgLowerCase = mensagem.toLowerCase();
+        const temPalavrasProibidas = palavrasProibidas.some(palavra => msgLowerCase.includes(palavra));
         
-        if (containsBadWords) {
+        if (temPalavrasProibidas) {
             return res.status(400).json({
-                error: "The message includes bad words"
+                total: 0,
+                mensagem: `A sua mensagem possui algum tipo de ofensa e não pode ser criada`
             });
         }
         
-        const messageTypes = ["romântica", "amizade", "motivacional", "comédia", "reflexiva"];
+        const tiposValidos = ["romântica", "amizade", "motivacional", "comédia", "reflexiva"];
         
-        const okMessageType = messageTypes.some((word) => message_type.toLowerCase().includes(word));
-
-        if (!okMessageType) {
+        if (!tiposValidos.includes(tipoMensagem.toLowerCase())) {
             return res.status(400).json({
-                error: `tipos de mensagem: ${messageTypes.join(", ")}`
+                total: 0,
+                mensagem: `Tipo inválido. Tipos aceitos: ${tiposValidos.join(", ")}`
             });
         }
 
-        const newConfession = await confessionsModel.createConfession(req.body);
+        const novaConfissao = await confissaoModel.createConfissao({
+            mensagem,
+            tipoMensagem,
+            remetenteId: Number(remetenteId),
+            destinatarioId: Number(destinatarioId)
+        });
 
         res.status(201).json({
-            message: "new confession created",
-            confession: newConfession
+            total: 1,
+            mensagem: "Confissão criada com sucesso",
+            confissao: novaConfissao
         });
+
     } catch (error) {
         res.status(500).json({
-            error: "internal server error",
-            details: error.message,
-            status: 500
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
         });
+
     }
 }
 
-export const deleteConfession = async (req, res) => {
+export const deleteConfissao = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const confessionExists = await confessionsModel.findOneConfession(id);
 
-        if (!confessionExists) {
+        const confissaoExiste = await confissaoModel.findConfissaoById(id);
+
+        if (!confissaoExiste) {
             return res.status(404).json({
-                error: "confession not founded",
-                id: id
+                total: 0,
+                mensagem: `Nenhuma confissão com o id ${id} encontrada`
             });
         }
 
-        await confessionsModel.deleteConfession(id);
+        await confissaoModel.deleteConfissao(id);
 
         res.status(200).json({
-            message: "confession successfully deleted",
-            confessionRemoved: confessionExists
+            mensagem: "Confissão deletada com sucesso",
+            confissaoRemovida: confissaoExiste
         });
     } catch (error) {
         res.status(500).json({
-            error: "internal server error",
-            details: error.message,
-            status: 500
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
         });
     }
 }

@@ -10,7 +10,7 @@ datasource db {
 model Confissao {
   id            Int          @id @default(autoincrement())
   mensagem      String?      @db.VarChar(500)
-  tipoMensagem  TipoMensagem?
+  tipoMensagem  String?      @db.VarChar(20)
   remetenteId   Int
   destinatarioId Int
   data          DateTime     @default(now())
