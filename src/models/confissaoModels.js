@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 export const findAllConfissoes = async () => {
     return await prisma.confissao.findMany({
-        orderBy: { remetenteId: "asc" }
+        orderBy: { data: "desc" }
     });
 }
 
@@ -30,14 +30,14 @@ export const deleteConfissao = async (id) => {
     });
 }
 
-export const updateConfession = async (id, data) => {
-    return await prisma.confessions.update({
+export const updateConfissao = async (id, data) => {
+    return await prisma.confissao.update({
         where: { id: Number(id) },
         data: {
-            ...(data.message && {message: data.message}),
-            ...(data.message_type && {message_type: data.message_type}),
-            ...(data.recipient && {recipient: data.recipient}),
-            ...(data.sender && {sender: data.sender})
+            ...(data.mensagem !== undefined && {mensagem: data.mensagem}),
+            ...(data.tipoMensagem !== undefined && {tipoMensagem: data.tipoMensagem}),
+            ...(data.remetenteId !== undefined && {remetenteId: data.remetenteId}),
+            ...(data.destinatarioId !== undefined && {destinatarioId: data.destinatarioId})
         }
     });
 }

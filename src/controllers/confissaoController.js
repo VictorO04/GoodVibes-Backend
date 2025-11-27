@@ -9,7 +9,7 @@ export const getAllConfissoes = async (req, res) => {
             mensagem: confissoes.length === 0
                 ? "Não há confissões na lista"
                 : "Lista de confissões encontrada",
-            confissoes
+            confissoes: confissoes
         });
 
     } catch (error) {
@@ -38,14 +38,14 @@ export const getConfissaoByID = async (req, res) => {
         if (!confession) {
             return res.status(404).json({
                 total: 0,
-                mensagem: `Nenhuma confissão com o id ${id} encontrada`,
+                mensagem: `Nenhuma confissão com o id ${id} encontrada`
             });
         }
 
         res.status(200).json({
             total: 1,
             mensagem: `confissão com o id ${id} encontrada`,
-            confession
+            confissao: confession
         });
 
     } catch (error) {
@@ -135,7 +135,7 @@ export const deleteConfissao = async (req, res) => {
 
         res.status(200).json({
             mensagem: "Confissão deletada com sucesso",
-            confissaoRemovida: confissaoExiste
+            confissao: confissaoExiste
         });
     } catch (error) {
         res.status(500).json({
@@ -147,29 +147,56 @@ export const deleteConfissao = async (req, res) => {
 
 export const updateConfession = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
         const data = req.body;
+        const { mensagem, tipoMensagem } = data;
+        const id = parseInt(req.params.id);
 
-        const confessionExists = await confessionsModel.findOneConfession(id);
+        const confissaoExiste = await confissaoModel.findConfissaoById(id);
 
-        if (!confessionExists) {
+        if (!confissaoExiste) {
             return res.status(404).json({
-                error: "confession not founded",
-                id: id
+                total: 0,
+                mensagem: `Nenhuma confissão com o id ${id} encontrada`
             });
         }
 
-        const confessionUpdated = await confessionsModel.updateConfession(id, data);
+        if (mensagem !== undefined) {
+            const decodificado = Buffer.from(process.env.PALAVRAS_PROIBIDAS_BASE64, "base64").toString("utf-8");
+            const palavrasProibidas = decodificado.split(",").map(p => p.trim().toLowerCase());
+
+            const msgLowerCase = mensagem.toLowerCase();
+            const temPalavrasProibidas = palavrasProibidas.some(palavra => msgLowerCase.includes(palavra));
+
+            if (temPalavrasProibidas) {
+                return res.status(400).json({
+                    total: 0,
+                    mensagem: `A sua mensagem possui algum tipo de ofensa e não pode ser criada`
+                });
+            }
+        }
+
+        if (tipoMensagem !== undefined) {
+            const tiposValidos = ["romântica", "amizade", "motivacional", "comédia", "reflexiva"];
+        
+            if (!tiposValidos.includes(tipoMensagem.toLowerCase())) {
+                return res.status(400).json({
+                    total: 0,
+                    mensagem: `Tipo inválido. Tipos aceitos: ${tiposValidos.join(", ")}`
+                });
+            }
+        }
+
+        const confissaoAtualizada = await confissaoModel.updateConfissao(id, data);
 
         res.status(200).json({
-            message: "confession succesfully updated",
-            confession: confessionUpdated
+            total: 1,
+            mensagem: "Confissão atualizada com sucesso",
+            confissao: confissaoAtualizada
         });
     } catch (error) {
         res.status(500).json({
-            error: "internal server error",
-            details: error.message,
-            status: 500
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
         });
     }
 }

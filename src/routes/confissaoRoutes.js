@@ -7,5 +7,6 @@ router.get("/", confissaoController.getAllConfissoes);
 router.get("/:id", confissaoController.getConfissaoByID);
 router.post("/", confissaoController.createConfissao);
 router.delete("/:id", confissaoController.deleteConfissao);
+router.put("/:id", confissaoController.updateConfession);
 
 export default router;
