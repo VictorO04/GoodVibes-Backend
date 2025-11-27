@@ -41,3 +41,11 @@ export const updateConfissao = async (id, data) => {
         }
     });
 }
+
+export const findConfissoesByTipo = async (tipo) => {
+    return prisma.confissao.findMany({
+        where: {
+            tipoMensagem: tipo
+        }
+    });
+}

@@ -32,10 +32,10 @@ export const getConfissaoByID = async (req, res) => {
             });
         }
 
-        const confession = await confissaoModel.findConfissaoById(id);
+        const confissao = await confissaoModel.findConfissaoById(id);
 
 
-        if (!confession) {
+        if (!confissao) {
             return res.status(404).json({
                 total: 0,
                 mensagem: `Nenhuma confissão com o id ${id} encontrada`
@@ -45,7 +45,7 @@ export const getConfissaoByID = async (req, res) => {
         res.status(200).json({
             total: 1,
             mensagem: `confissão com o id ${id} encontrada`,
-            confissao: confession
+            confissao: confissao
         });
 
     } catch (error) {
@@ -73,27 +73,30 @@ export const createConfissao = async (req, res) => {
             });
         }
 
-        const decodificado = Buffer.from(process.env.PALAVRAS_PROIBIDAS_BASE64, "base64").toString("utf-8");
-        
-        const palavrasProibidas = decodificado.split(",").map(p => p.trim().toLowerCase());
+        if (mensagem !== undefined) {
+            const decodificado = Buffer.from(process.env.PALAVRAS_PROIBIDAS_BASE64, "base64").toString("utf-8");
+            const palavrasProibidas = decodificado.split(",").map(p => p.trim().toLowerCase());
 
-        const msgLowerCase = mensagem.toLowerCase();
-        const temPalavrasProibidas = palavrasProibidas.some(palavra => msgLowerCase.includes(palavra));
-        
-        if (temPalavrasProibidas) {
-            return res.status(400).json({
-                total: 0,
-                mensagem: `A sua mensagem possui algum tipo de ofensa e não pode ser criada`
-            });
+            const msgLowerCase = mensagem.toLowerCase();
+            const temPalavrasProibidas = palavrasProibidas.some(palavra => msgLowerCase.includes(palavra));
+
+            if (temPalavrasProibidas) {
+                return res.status(400).json({
+                    total: 0,
+                    mensagem: "Mensagem contém palavras proibidas"
+                });
+            }
         }
+
+        if (tipoMensagem !== undefined) {
+            const tiposValidos = ["romantica", "amizade", "motivacional", "comedia", "reflexiva"];
         
-        const tiposValidos = ["romântica", "amizade", "motivacional", "comédia", "reflexiva"];
-        
-        if (!tiposValidos.includes(tipoMensagem.toLowerCase())) {
-            return res.status(400).json({
-                total: 0,
-                mensagem: `Tipo inválido. Tipos aceitos: ${tiposValidos.join(", ")}`
-            });
+            if (!tiposValidos.includes(tipoMensagem.toLowerCase())) {
+                return res.status(400).json({
+                    total: 0,
+                    mensagem: `Tipo inválido. Tipos aceitos: ${tiposValidos.join(", ")}`
+                });
+            }
         }
 
         const novaConfissao = await confissaoModel.createConfissao({
@@ -137,15 +140,17 @@ export const deleteConfissao = async (req, res) => {
             mensagem: "Confissão deletada com sucesso",
             confissao: confissaoExiste
         });
+
     } catch (error) {
         res.status(500).json({
             erro: "Erro interno de servidor",
             detalhes: error.message,
         });
+
     }
 }
 
-export const updateConfession = async (req, res) => {
+export const updateConfissao = async (req, res) => {
     try {
         const data = req.body;
         const { mensagem, tipoMensagem } = data;
@@ -170,13 +175,13 @@ export const updateConfession = async (req, res) => {
             if (temPalavrasProibidas) {
                 return res.status(400).json({
                     total: 0,
-                    mensagem: `A sua mensagem possui algum tipo de ofensa e não pode ser criada`
+                    mensagem: "Mensagem contém palavras proibidas"
                 });
             }
         }
 
         if (tipoMensagem !== undefined) {
-            const tiposValidos = ["romântica", "amizade", "motivacional", "comédia", "reflexiva"];
+            const tiposValidos = ["romantica", "amizade", "motivacional", "comedia", "reflexiva"];
         
             if (!tiposValidos.includes(tipoMensagem.toLowerCase())) {
                 return res.status(400).json({
@@ -193,6 +198,39 @@ export const updateConfession = async (req, res) => {
             mensagem: "Confissão atualizada com sucesso",
             confissao: confissaoAtualizada
         });
+
+    } catch (error) {
+        res.status(500).json({
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
+        });
+
+    }
+}
+
+export const getConfissaoByTipo = async (req, res) => {
+    try {
+        const tipo = req.params.tipo.toLowerCase();
+
+        const tiposValidos = ["romantica", "amizade", "motivacional", "comedia", "reflexiva"];
+
+        if (!tiposValidos.includes(tipo)){
+            return res.status(400).json({
+                total: 0,
+                mensagem: `Tipo inválido. Tipos aceitos: ${tiposValidos.join(", ")}`
+            });
+        }
+
+        const confissoes = await confissaoModel.findConfissoesByTipo(tipo);
+
+        res.status(200).json({
+            total: confissoes.length,
+            mensagem: confissoes.length === 0
+                ? `Não há confissões do tipo ${tipo} na lista`
+                : `Lista de confissões do tipo ${tipo} encontrada`,
+            confissoes: confissoes
+        });
+
     } catch (error) {
         res.status(500).json({
             erro: "Erro interno de servidor",
