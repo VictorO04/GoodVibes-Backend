@@ -1,8 +1,8 @@
-import * as confissaoModel from "./../models/confissaoModels.js";
+import * as confissoesModel from "../models/confissoesModel.js";
 
 export const getAllConfissoes = async (req, res) => {
     try {
-        const confissoes = await confissaoModel.findAllConfissoes();
+        const confissoes = await confissoesModel.findAllConfissoes();
 
         return res.status(200).json({
             total: confissoes.length,
@@ -32,7 +32,7 @@ export const getConfissaoByID = async (req, res) => {
             });
         }
 
-        const confissao = await confissaoModel.findConfissaoById(id);
+        const confissao = await confissoesModel.findConfissaoById(id);
 
 
         if (!confissao) {
@@ -99,7 +99,7 @@ export const createConfissao = async (req, res) => {
             }
         }
 
-        const novaConfissao = await confissaoModel.createConfissao({
+        const novaConfissao = await confissoesModel.createConfissao({
             mensagem,
             tipoMensagem,
             remetenteId: Number(remetenteId),
@@ -125,7 +125,7 @@ export const deleteConfissao = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
 
-        const confissaoExiste = await confissaoModel.findConfissaoById(id);
+        const confissaoExiste = await confissoesModel.findConfissaoById(id);
 
         if (!confissaoExiste) {
             return res.status(404).json({
@@ -134,7 +134,7 @@ export const deleteConfissao = async (req, res) => {
             });
         }
 
-        await confissaoModel.deleteConfissao(id);
+        await confissoesModel.deleteConfissao(id);
 
         res.status(200).json({
             mensagem: "Confissão deletada com sucesso",
@@ -156,7 +156,7 @@ export const updateConfissao = async (req, res) => {
         const { mensagem, tipoMensagem } = data;
         const id = parseInt(req.params.id);
 
-        const confissaoExiste = await confissaoModel.findConfissaoById(id);
+        const confissaoExiste = await confissoesModel.findConfissaoById(id);
 
         if (!confissaoExiste) {
             return res.status(404).json({
@@ -191,7 +191,7 @@ export const updateConfissao = async (req, res) => {
             }
         }
 
-        const confissaoAtualizada = await confissaoModel.updateConfissao(id, data);
+        const confissaoAtualizada = await confissoesModel.updateConfissao(id, data);
 
         res.status(200).json({
             total: 1,
@@ -221,7 +221,7 @@ export const getConfissaoByTipo = async (req, res) => {
             });
         }
 
-        const confissoes = await confissaoModel.findConfissoesByTipo(tipo);
+        const confissoes = await confissoesModel.findConfissoesByTipo(tipo);
 
         res.status(200).json({
             total: confissoes.length,

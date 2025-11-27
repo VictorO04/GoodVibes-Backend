@@ -18,8 +18,8 @@ export const createConfissao = async (data) => {
         data: {
             mensagem: data.mensagem,
             tipoMensagem: data.tipoMensagem,
-            remetenteId: data.remetenteId ? Number(data.remetenteId) : null,
-            destinatarioId: data.destinatarioId ? Number(data.destinatarioId) : null
+            remetenteId: Number(data.remetenteId),
+            destinatarioId: Number(data.destinatarioId)
         }
     });
 }
@@ -36,14 +36,14 @@ export const updateConfissao = async (id, data) => {
         data: {
             ...(data.mensagem !== undefined && {mensagem: data.mensagem}),
             ...(data.tipoMensagem !== undefined && {tipoMensagem: data.tipoMensagem}),
-            ...(data.remetenteId !== undefined && {remetenteId: data.remetenteId}),
-            ...(data.destinatarioId !== undefined && {destinatarioId: data.destinatarioId})
+            ...(data.remetenteId !== undefined && { remetenteId: Number(data.remetenteId) }),
+            ...(data.destinatarioId !== undefined && { destinatarioId: Number(data.destinatarioId) }),
         }
     });
 }
 
 export const findConfissoesByTipo = async (tipo) => {
-    return prisma.confissao.findMany({
+    return await prisma.confissao.findMany({
         where: {
             tipoMensagem: tipo
         }
