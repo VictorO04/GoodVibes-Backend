@@ -4,23 +4,17 @@ export const listAllConfessions = async (req, res) => {
     try {
         const confessions = await confessionsModel.findAllConfessions();
 
-        if (!confessions || confessions.length === 0) {
-            return res.status(404).json({
-                total: 0,
-                message: "There are no confessions on the list",
-                confessions
-            });
-        }
-        res.status(200).json({
+        return res.status(200).json({
             total: confessions.length,
-            message: "confessions list",
-            confessions
+            mensagem: confessions.length === 0
+                ? "Não há confissões na lista"
+                : "Lista de confissões encontrada",
+                confessions
         });
     } catch (error) {
         res.status(500).json({
-            error: "internal server error",
-            details: error.message,
-            status: 500
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
         });
     }
 }
@@ -30,23 +24,29 @@ export const listOneConfession = async (req, res) => {
         const id = parseInt(req.params.id);
         const confession = await confessionsModel.findOneConfession(id);
 
+        if (isNaN(id) || id <= 0) {
+            return res.status(400).json({
+                total: 0,
+                mensagem: "O id precisa ser válido"
+            });
+        }
+
         if (!confession) {
             return res.status(404).json({
-                error: "confession not founded",
-                message: "Check the confession id",
-                id: id
+                total: 0,
+                mensagem: `Nenhuma confissão com o id ${id} encontrada`,
             });
         }
 
         res.status(200).json({
-            message: "confession founded",
+            total: 1,
+            mensagem: `confissão com o id ${id} encontrada`,
             confession
         });
     } catch (error) {
         res.status(500).json({
-            error: "internal server error",
-            details: error.message,
-            status: 500
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
         });
     }
 }

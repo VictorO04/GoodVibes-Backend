@@ -18,8 +18,8 @@ export const createConfession = async (data) => {
         data: {
             message: data.message,
             message_type: data.message_type,
-            recipient: data.recipient,
-            sender: data.sender
+            recipient: Number(data.recipient),
+            sender: Number(data.sender)
         }
     });
 }

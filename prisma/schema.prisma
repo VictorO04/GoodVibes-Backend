@@ -22,7 +22,7 @@ model users {
   id                                       Int           @id @default(autoincrement())
   username                                 String        @db.VarChar(13)
   email                                    String        @db.VarChar(50)
-  password                                 String?       @db.VarChar(50)
+  password                                 String?       @db.VarChar(255)
   anonymous                                Boolean?
   confessions_confessions_recipientTousers confessions[] @relation("confessions_recipientTousers")
   confessions_confessions_senderTousers    confessions[] @relation("confessions_senderTousers")
