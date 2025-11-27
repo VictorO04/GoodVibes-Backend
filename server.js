@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import confessionsRoutes from "./src/routes/confessionsRoutes.js";
+import confissaoRoutes from "./src/routes/confissaoRoutes.js";
 import usersRoutes from "./src/routes/usersRoutes.js"
 
 const app = express();
@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
     res.send("Servidor online!");
 });
 
-app.use("/confissoes", confessionsRoutes);
+app.use("/confissoes", confissaoRoutes);
 app.use("/usuarios", usersRoutes)
 
 app.listen(serverPort, () => {

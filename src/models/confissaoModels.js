@@ -1,14 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export const findAllConfessions = async () => {
-    return await prisma.confessions.findMany({
-        orderBy: { sender: "asc" }
+export const findAllConfissoes = async () => {
+    return await prisma.confissao.findMany({
+        orderBy: { remetenteId: "asc" }
     });
 }
 
-export const findOneConfession = async (id) => {
-    return await prisma.confessions.findUnique({
+export const findConfissaoById = async (id) => {
+    return await prisma.confissao.findUnique({
         where: { id: Number(id) }
     });
 }

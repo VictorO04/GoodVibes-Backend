@@ -1,28 +1,29 @@
-import * as confessionsModel from "./../models/confessionsModels.js";
+import * as confissaoModel from "./../models/confissaoModels.js";
 
-export const listAllConfessions = async (req, res) => {
+export const getAllConfissoes = async (req, res) => {
     try {
-        const confessions = await confessionsModel.findAllConfessions();
+        const confissoes = await confissaoModel.findAllConfissoes();
 
         return res.status(200).json({
-            total: confessions.length,
-            mensagem: confessions.length === 0
+            total: confissoes.length,
+            mensagem: confissoes.length === 0
                 ? "Não há confissões na lista"
                 : "Lista de confissões encontrada",
-                confessions
+                confissoes
         });
+
     } catch (error) {
         res.status(500).json({
             erro: "Erro interno de servidor",
             detalhes: error.message,
         });
+
     }
 }
 
-export const listOneConfession = async (req, res) => {
+export const getConfissaoByID = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const confession = await confessionsModel.findOneConfession(id);
 
         if (isNaN(id) || id <= 0) {
             return res.status(400).json({
@@ -30,6 +31,9 @@ export const listOneConfession = async (req, res) => {
                 mensagem: "O id precisa ser válido"
             });
         }
+
+        const confession = await confissaoModel.findConfissaoById(id);
+
 
         if (!confession) {
             return res.status(404).json({
@@ -43,11 +47,13 @@ export const listOneConfession = async (req, res) => {
             mensagem: `confissão com o id ${id} encontrada`,
             confession
         });
+
     } catch (error) {
         res.status(500).json({
             erro: "Erro interno de servidor",
             detalhes: error.message,
         });
+
     }
 }
 
