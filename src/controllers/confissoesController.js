@@ -4,7 +4,7 @@ export const getAllConfissoes = async (req, res) => {
     try {
         const confissoes = await confissoesModel.findAllConfissoes();
 
-        return res.status(200).json({
+        res.status(200).json({
             total: confissoes.length,
             mensagem: confissoes.length === 0
                 ? "Não há confissões na lista"
@@ -44,7 +44,7 @@ export const getConfissaoByID = async (req, res) => {
 
         res.status(200).json({
             total: 1,
-            mensagem: `confissão com o id ${id} encontrada`,
+            mensagem: `Confissão com o id ${id} encontrada`,
             confissao: confissao
         });
 
