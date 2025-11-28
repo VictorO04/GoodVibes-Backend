@@ -238,3 +238,24 @@ export const getConfissaoByTipo = async (req, res) => {
         });
     }
 }
+
+export const getConfissoesAnonimas = async (req, res) => {
+    try {
+        const confissoes = await confissoesModel.findConfissoesAnonimas();
+
+        res.status(200).json({
+            total: confissoes.length,
+            mensagem: confissoes.length === 0
+                ? "Não há confissões anônimas na lista"
+                : "Lista de confissões anônimas encontrada",
+            confissoes: confissoes
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
+        });
+
+    }
+}

@@ -3,13 +3,45 @@ const prisma = new PrismaClient();
 
 export const findAllConfissoes = async () => {
     return await prisma.confissao.findMany({
+        include: {
+            remetente: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            },
+                destinatario: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            }
+        },
         orderBy: { data: "desc" }
     });
 }
 
 export const findConfissaoById = async (id) => {
     return await prisma.confissao.findUnique({
-        where: { id: Number(id) }
+        where: { id: Number(id) },
+        include: {
+            remetente: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            },
+                destinatario: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            }
+        }
     });
 }
 
@@ -46,6 +78,49 @@ export const findConfissoesByTipo = async (tipo) => {
     return await prisma.confissao.findMany({
         where: {
             tipoMensagem: tipo
+        },
+        include: {
+            remetente: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            },
+                destinatario: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            }
         }
+    });
+}
+
+export const findConfissoesAnonimas = async () => {
+    return await prisma.confissao.findMany({
+        where: {
+            remetente: {
+                anonimo: true
+            }
+        },
+        include: {
+            remetente: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            },
+                destinatario: {
+                select: {
+                    id: true,
+                    nomeUsuario: true,
+                    anonimo: true
+                }
+            }
+        },
+        orderBy: { data: "desc" }
     });
 }
