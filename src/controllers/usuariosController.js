@@ -1,4 +1,5 @@
 import * as usuariosModel from "../models/usuariosModel.js";
+import bcrypt from "bcrypt";
 
 export const getAllUsuarios = async (req, res) => {
     try {
@@ -56,58 +57,44 @@ export const getUsuariosById = async (req, res) => {
     }
 }
 
-export const createUser = async (req, res) => {
-  try {
-    const { username, email, password, anonymous } = req.body;
+export const createUsuario = async (req, res) => {
+    try {
+        const data = req.body;
+        const { nomeUsuario, email, senha, anonimo } = data;
 
-    const data = req.body;
-    const missingFields = ["username", "email", "password", "anonymous"];
+        const camposObrigatorios = ["nomeUsuario", "email", "senha"];
 
-    const lost = missingFields.filter((field) => !data[field]);
+        const faltando = camposObrigatorios.filter((campo) => !data[campo] && data[campo] !== 0);
 
-    if (lost.length > 0) {
-      return res.status(400).json({
-        error: `the following fields are required: ${lost.join(", ")}.`,
-      });
+        if (faltando.length > 0) {
+            return res.status(400).json({
+                total: 0,
+                mensagem: `Os seguintes campos são obrigatórios:  ${faltando.join(", ")}`
+            });
+        }
+
+        const hashSenha = await bcrypt.hash(data.senha, 10);
+
+        const novoUsuario = await usuariosModel.createUsuario({
+            nomeUsuario,
+            email,
+            senha: hashSenha,
+            anonimo: anonimo ?? false
+        });
+
+        delete novoUsuario.senha;
+
+        res.status(201).json({
+            total: 1,
+            mensagem: "Usuário criado com sucesso",
+            usuario: novoUsuario
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            erro: "Erro interno de servidor",
+            detalhes: error.message,
+        });
+
     }
-
-    const newUser = await usersModels.createUser(req.body);
-
-    res.status(201).json({
-      message: "New user created",
-      user: newUser,
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: "internal server error",
-      details: error.message,
-      status: 500,
-    });
-  }
-};
-
-export const deleteUser = async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const userExists = await usersModels.findOneUser(id);
-
-    if (!userExists) {
-      return res.status(404).json({
-        error: "User not founded",
-        id: id,
-      });
-    }
-    await usersModels.deleteUser(id);
-
-    res.status(200).json({
-      message: "The user got deleted",
-      user: userExists,
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: "Internal server error",
-      details: error.message,
-      status: 500,
-    });
-  }
-};
+}

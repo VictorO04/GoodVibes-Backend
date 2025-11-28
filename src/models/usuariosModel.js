@@ -12,3 +12,14 @@ export const findUsuarioById = async (id) => {
       where: { id: Number(id) }
     });
 }
+
+export const createUsuario = async (data) => {
+    return await prisma.usuario.create({
+        data: {
+            nomeUsuario: data.nomeUsuario,
+            email: data.email,
+            senha: data.senha,
+            anonimo: data.anonimo
+        }
+    });
+}
