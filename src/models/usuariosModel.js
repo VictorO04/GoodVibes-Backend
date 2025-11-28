@@ -23,3 +23,9 @@ export const createUsuario = async (data) => {
         }
     });
 }
+
+export const deleteUsuario = async (id) => {
+    return await prisma.usuario.delete({
+        where: { id: Number(id) }
+    });
+}
