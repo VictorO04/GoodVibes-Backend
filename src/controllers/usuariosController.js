@@ -79,7 +79,7 @@ export const createUsuario = async (req, res) => {
 
         const hashSenha = await bcrypt.hash(data.senha, 10);
 
-        const emojis = ["😶", "👤", "🕵️", "👽", "🐧", "🦊", "🐼", "🐸", "🐵", "🐱"];
+        const emojis = ["😶", "💀","🕵️", "👽", "🐧", "🦊", "🐼", "🐸", "🐵", "🐱"];
 
         let nomeFinal = nomeUsuario;
 
