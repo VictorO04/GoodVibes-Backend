@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Confissao {
+  id            Int          @id @default(autoincrement())
+  mensagem      String?      @db.VarChar(500)
+  tipoMensagem  String?      @db.VarChar(20)
+  remetenteId   Int
+  destinatarioId Int
+  data          DateTime     @default(now())
+
+  remetente     Usuario      @relation("ConfissoesEnviadas", fields: [remetenteId], references: [id])
+  destinatario  Usuario      @relation("ConfissoesRecebidas", fields: [destinatarioId], references: [id])
+}
+
+model Usuario {
+  id                  Int          @id @default(autoincrement())
+  nomeUsuario         String       @db.VarChar(13)
+  email               String       @db.VarChar(50)
+  senha               String?      @db.VarChar(255)
+  anonimo             Boolean      @default(false)
+
+  confissoesEnviadas  Confissao[]  @relation("ConfissoesEnviadas")
+  confissoesRecebidas Confissao[]  @relation("ConfissoesRecebidas")
+}
