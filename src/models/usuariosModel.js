@@ -29,3 +29,15 @@ export const deleteUsuario = async (id) => {
         where: { id: Number(id) }
     });
 }
+
+export const updateUsuario = async (id, data) => {
+    return await prisma.usuario.update({
+        where: { id: Number(id) },
+        data: {
+            ...(data.nomeUsuario !== undefined && {nomeUsuario: data.nomeUsuario}),
+            ...(data.email !== undefined && {email: data.email}),
+            ...(data.senha !== undefined && { senha: data.senha }),
+            ...(data.anonimo !== undefined && { anonimo: data.anonimo }),
+        }
+    });
+}
