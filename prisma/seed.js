@@ -1,0 +1,252 @@
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+import bcrypt from "bcrypt";
+
+async function main() {
+
+    const confissoes = [
+        { mensagem: "Eu não sei o que fazer, estou perdido...", tipoMensagem: "desabafo", remetenteId: 1, destinatarioId: 2 },
+        { mensagem: "Você é a pessoa mais importante da minha vida!", tipoMensagem: "amor", remetenteId: 2, destinatarioId: 3 },
+        { mensagem: "Sinto uma raiva tão grande de você às vezes!", tipoMensagem: "raiva", remetenteId: 3, destinatarioId: 4 },
+        { mensagem: "Eu te considero muito, sabia?", tipoMensagem: "amizade", remetenteId: 4, destinatarioId: 5 },
+        { mensagem: "Eu não queria te machucar, mas fiz.", tipoMensagem: "desculpas", remetenteId: 5, destinatarioId: 6 },
+        { mensagem: "Tenho medo de te perder, você é tudo para mim.", tipoMensagem: "amor", remetenteId: 6, destinatarioId: 7 },
+        { mensagem: "Não sei como continuar depois do que aconteceu.", tipoMensagem: "desabafo", remetenteId: 7, destinatarioId: 8 },
+        { mensagem: "Eu te odeio, mas te amo ao mesmo tempo.", tipoMensagem: "confuso", remetenteId: 8, destinatarioId: 9 },
+        { mensagem: "Você sempre será meu melhor amigo.", tipoMensagem: "amizade", remetenteId: 9, destinatarioId: 10 },
+        { mensagem: "Eu me arrependo tanto de tudo...", tipoMensagem: "desculpas", remetenteId: 10, destinatarioId: 11 },
+    
+        { mensagem: "Eu sou grato por tudo o que você fez por mim.", tipoMensagem: "gratidao", remetenteId: 11, destinatarioId: 12 },
+        { mensagem: "Nunca mais quero te ver!", tipoMensagem: "raiva", remetenteId: 12, destinatarioId: 13 },
+        { mensagem: "Eu te amo mais do que qualquer coisa.", tipoMensagem: "amor", remetenteId: 13, destinatarioId: 14 },
+        { mensagem: "Eu queria poder voltar atrás, não sabia o que estava fazendo.", tipoMensagem: "arrependimento", remetenteId: 14, destinatarioId: 15 },
+        { mensagem: "Me sinto tão sozinho, ninguém me entende.", tipoMensagem: "desabafo", remetenteId: 15, destinatarioId: 16 },
+        { mensagem: "Você foi a melhor coisa que me aconteceu.", tipoMensagem: "gratidao", remetenteId: 16, destinatarioId: 17 },
+        { mensagem: "Nunca mais vou confiar em ninguém.", tipoMensagem: "raiva", remetenteId: 17, destinatarioId: 18 },
+        { mensagem: "Eu queria que você soubesse o quanto você significa para mim.", tipoMensagem: "amor", remetenteId: 18, destinatarioId: 19 },
+        { mensagem: "Eu sinto falta de quem você era antes.", tipoMensagem: "saudade", remetenteId: 19, destinatarioId: 20 },
+        { mensagem: "Você me machucou profundamente e eu nunca vou esquecer.", tipoMensagem: "raiva", remetenteId: 20, destinatarioId: 21 },
+    
+        { mensagem: "Sinto muito, não sabia como te dizer isso.", tipoMensagem: "desculpas", remetenteId: 21, destinatarioId: 22 },
+        { mensagem: "Te amo, mas tenho medo do que pode acontecer.", tipoMensagem: "confuso", remetenteId: 22, destinatarioId: 23 },
+        { mensagem: "Eu me arrependo de não ter te dado a atenção que você merecia.", tipoMensagem: "arrependimento", remetenteId: 23, destinatarioId: 24 },
+        { mensagem: "Gostaria que você estivesse aqui, eu preciso de você.", tipoMensagem: "saudade", remetenteId: 24, destinatarioId: 25 },
+        { mensagem: "Eu só queria que as coisas fossem diferentes.", tipoMensagem: "desabafo", remetenteId: 25, destinatarioId: 26 },
+        { mensagem: "Eu nunca te disse, mas você sempre foi muito importante para mim.", tipoMensagem: "amizade", remetenteId: 26, destinatarioId: 27 },
+        { mensagem: "Eu me sinto preso em uma situação que não posso controlar.", tipoMensagem: "desabafo", remetenteId: 27, destinatarioId: 28 },
+        { mensagem: "Te amo, mas a distância tem sido difícil.", tipoMensagem: "amor", remetenteId: 28, destinatarioId: 29 },
+        { mensagem: "Eu não aguento mais essa situação.", tipoMensagem: "raiva", remetenteId: 29, destinatarioId: 30 },
+        { mensagem: "Você é a única pessoa que realmente me entende.", tipoMensagem: "amizade", remetenteId: 30, destinatarioId: 31 },
+    
+        { mensagem: "Eu não queria te ferir, mas acabei fazendo.", tipoMensagem: "desculpas", remetenteId: 31, destinatarioId: 32 },
+        { mensagem: "Te amo mais a cada dia que passa.", tipoMensagem: "amor", remetenteId: 32, destinatarioId: 33 },
+        { mensagem: "Eu não consigo esquecer o que aconteceu.", tipoMensagem: "raiva", remetenteId: 33, destinatarioId: 34 },
+        { mensagem: "Sinto sua falta, mas não sei como consertar isso.", tipoMensagem: "saudade", remetenteId: 34, destinatarioId: 35 },
+        { mensagem: "Você nunca vai entender o quanto me machucou.", tipoMensagem: "raiva", remetenteId: 35, destinatarioId: 36 },
+        { mensagem: "Eu só quero que você saiba que sempre estarei aqui para você.", tipoMensagem: "amizade", remetenteId: 36, destinatarioId: 37 },
+        { mensagem: "Eu fiz uma escolha errada e isso me consome todos os dias.", tipoMensagem: "arrependimento", remetenteId: 37, destinatarioId: 38 },
+        { mensagem: "Eu não sabia que estava te machucando até agora.", tipoMensagem: "desculpas", remetenteId: 38, destinatarioId: 39 },
+        { mensagem: "Eu não quero que você se afaste de mim.", tipoMensagem: "amor", remetenteId: 39, destinatarioId: 40 },
+        { mensagem: "Eu não aguento mais as mentiras.", tipoMensagem: "raiva", remetenteId: 40, destinatarioId: 41 },
+    
+        { mensagem: "Você foi meu melhor amigo e eu nunca vou te esquecer.", tipoMensagem: "amizade", remetenteId: 41, destinatarioId: 42 },
+        { mensagem: "Eu te amei mais do que qualquer um poderia entender.", tipoMensagem: "amor", remetenteId: 42, destinatarioId: 43 },
+        { mensagem: "Eu nunca mais vou confiar em você.", tipoMensagem: "raiva", remetenteId: 43, destinatarioId: 44 },
+        { mensagem: "Eu sinto muito por tudo que aconteceu.", tipoMensagem: "desculpas", remetenteId: 44, destinatarioId: 45 },
+        { mensagem: "Eu queria poder fazer as coisas diferentes.", tipoMensagem: "arrependimento", remetenteId: 45, destinatarioId: 46 },
+        { mensagem: "Eu me sinto tão perdido sem você.", tipoMensagem: "desabafo", remetenteId: 46, destinatarioId: 47 },
+        { mensagem: "Eu sei que te magoei, e lamento profundamente.", tipoMensagem: "desculpas", remetenteId: 47, destinatarioId: 48 },
+        { mensagem: "Te amo, mas não sei se posso mais continuar assim.", tipoMensagem: "confuso", remetenteId: 48, destinatarioId: 49 },
+        { mensagem: "Você nunca vai entender o quanto me dói te perder.", tipoMensagem: "saudade", remetenteId: 49, destinatarioId: 50 },
+        { mensagem: "Eu só queria que tudo fosse mais fácil entre a gente.", tipoMensagem: "desabafo", remetenteId: 50, destinatarioId: 51 },
+    
+        { mensagem: "Eu não sabia como te dizer, mas sempre estarei ao seu lado.", tipoMensagem: "amizade", remetenteId: 51, destinatarioId: 52 },
+        { mensagem: "Eu gostaria de voltar no tempo e mudar tudo.", tipoMensagem: "arrependimento", remetenteId: 52, destinatarioId: 53 },
+        { mensagem: "Eu sinto que te perdi para sempre.", tipoMensagem: "saudade", remetenteId: 53, destinatarioId: 54 },
+        { mensagem: "Nunca mais vou confiar em você, foi a pior coisa que você fez.", tipoMensagem: "raiva", remetenteId: 54, destinatarioId: 55 },
+        { mensagem: "Eu não sei como me desculpar por tudo o que fiz.", tipoMensagem: "desculpas", remetenteId: 55, destinatarioId: 56 },
+        { mensagem: "Te amo, mas não sei se isso é suficiente para te manter comigo.", tipoMensagem: "amor", remetenteId: 56, destinatarioId: 57 },
+        { mensagem: "Você tem sido meu apoio, e eu sou grato por isso.", tipoMensagem: "gratidao", remetenteId: 57, destinatarioId: 58 },
+        { mensagem: "Eu te amo, mas você está me deixando sem escolhas.", tipoMensagem: "confuso", remetenteId: 58, destinatarioId: 59 },
+        { mensagem: "Eu sei que errei, mas preciso de uma chance para corrigir.", tipoMensagem: "desculpas", remetenteId: 59, destinatarioId: 60 },
+        { mensagem: "Eu só queria que você voltasse a ser quem era.", tipoMensagem: "saudade", remetenteId: 60, destinatarioId: 61 },
+    
+        { mensagem: "Eu não quero te perder, por favor, volte para mim.", tipoMensagem: "amor", remetenteId: 61, destinatarioId: 62 },
+        { mensagem: "Eu não posso mais te enganar.", tipoMensagem: "raiva", remetenteId: 62, destinatarioId: 63 },
+        { mensagem: "Eu não consigo mais viver com essa dor.", tipoMensagem: "desabafo", remetenteId: 63, destinatarioId: 64 },
+        { mensagem: "Eu queria tanto poder voltar atrás...", tipoMensagem: "arrependimento", remetenteId: 64, destinatarioId: 65 },
+        { mensagem: "Eu sinto tanto por ter te magoado.", tipoMensagem: "desculpas", remetenteId: 65, destinatarioId: 66 },
+        { mensagem: "Eu sempre estarei ao seu lado, não importa o que aconteça.", tipoMensagem: "amizade", remetenteId: 66, destinatarioId: 67 },
+        { mensagem: "Eu não sei o que fazer sem você.", tipoMensagem: "desabafo", remetenteId: 67, destinatarioId: 68 },
+        { mensagem: "Eu nunca quis te fazer sofrer.", tipoMensagem: "desculpas", remetenteId: 68, destinatarioId: 69 },
+        { mensagem: "Eu te amo, e não posso viver sem você.", tipoMensagem: "amor", remetenteId: 69, destinatarioId: 70 },
+        { mensagem: "Eu me arrependo de não ter te dito o que sentia.", tipoMensagem: "arrependimento", remetenteId: 70, destinatarioId: 71 },
+    
+        { mensagem: "Eu não sei como começar, mas preciso que você saiba que sinto muito.", tipoMensagem: "desculpas", remetenteId: 71, destinatarioId: 72 },
+        { mensagem: "Te amo e sei que posso fazer melhor.", tipoMensagem: "amor", remetenteId: 72, destinatarioId: 73 },
+        { mensagem: "Eu não sei como lidar com essa dor que você causou.", tipoMensagem: "raiva", remetenteId: 73, destinatarioId: 74 },
+        { mensagem: "Eu me arrependo profundamente de tudo o que fiz.", tipoMensagem: "arrependimento", remetenteId: 74, destinatarioId: 75 },
+        { mensagem: "Eu só queria ter mais tempo com você.", tipoMensagem: "saudade", remetenteId: 75, destinatarioId: 76 },
+        { mensagem: "Eu te amo mais do que posso expressar.", tipoMensagem: "amor", remetenteId: 76, destinatarioId: 77 },
+        { mensagem: "Eu queria ter sido mais paciente com você.", tipoMensagem: "arrependimento", remetenteId: 77, destinatarioId: 78 },
+        { mensagem: "Sinto sua falta a cada dia mais.", tipoMensagem: "saudade", remetenteId: 78, destinatarioId: 79 },
+        { mensagem: "Eu não aguento mais essa pressão.", tipoMensagem: "desabafo", remetenteId: 79, destinatarioId: 80 },
+        { mensagem: "Eu sinto muito por não ter dado o valor que você merece.", tipoMensagem: "desculpas", remetenteId: 80, destinatarioId: 81 },
+    
+        { mensagem: "Eu só queria que as coisas voltassem ao normal.", tipoMensagem: "saudade", remetenteId: 81, destinatarioId: 82 },
+        { mensagem: "Eu te amo, mas você não percebe.", tipoMensagem: "amor", remetenteId: 82, destinatarioId: 83 },
+        { mensagem: "Você é a razão de eu não ser mais o mesmo.", tipoMensagem: "raiva", remetenteId: 83, destinatarioId: 84 },
+        { mensagem: "Eu não sabia o quanto te perderia até agora.", tipoMensagem: "saudade", remetenteId: 84, destinatarioId: 85 },
+        { mensagem: "Eu errei muito e sei disso.", tipoMensagem: "arrependimento", remetenteId: 85, destinatarioId: 86 },
+        { mensagem: "Eu não sei se posso te perdoar por tudo o que aconteceu.", tipoMensagem: "raiva", remetenteId: 86, destinatarioId: 87 },
+        { mensagem: "Eu te amo, mas a vida me levou em outra direção.", tipoMensagem: "amor", remetenteId: 87, destinatarioId: 88 },
+        { mensagem: "Eu sempre estarei grato por tudo que você fez por mim.", tipoMensagem: "gratidao", remetenteId: 88, destinatarioId: 89 },
+        { mensagem: "Eu não consigo mais viver sem você ao meu lado.", tipoMensagem: "amor", remetenteId: 89, destinatarioId: 90 },
+        { mensagem: "Eu sinto tanto por ter te magoado assim.", tipoMensagem: "desculpas", remetenteId: 90, destinatarioId: 91 },
+    
+        { mensagem: "Te amo e vou sempre te amar.", tipoMensagem: "amor", remetenteId: 91, destinatarioId: 92 },
+        { mensagem: "Eu não sabia que o que fiz te machucaria tanto.", tipoMensagem: "arrependimento", remetenteId: 92, destinatarioId: 93 },
+        { mensagem: "Eu sinto muito por não ter sido mais paciente.", tipoMensagem: "desculpas", remetenteId: 93, destinatarioId: 94 },
+        { mensagem: "Eu não posso mais esconder o que sinto.", tipoMensagem: "confuso", remetenteId: 94, destinatarioId: 95 },
+        { mensagem: "Nunca mais vou cometer os mesmos erros.", tipoMensagem: "arrependimento", remetenteId: 95, destinatarioId: 96 },
+        { mensagem: "Eu só queria que você fosse feliz, mesmo que não comigo.", tipoMensagem: "saudade", remetenteId: 96, destinatarioId: 97 },
+        { mensagem: "Eu te amo mais do que qualquer coisa nessa vida.", tipoMensagem: "amor", remetenteId: 97, destinatarioId: 98 },
+        { mensagem: "Eu não sei o que fazer sem você aqui.", tipoMensagem: "saudade", remetenteId: 98, destinatarioId: 99 },
+        { mensagem: "Eu sinto muito por tudo o que aconteceu.", tipoMensagem: "desculpas", remetenteId: 99, destinatarioId: 100 },
+        { mensagem: "Você foi a melhor parte da minha vida.", tipoMensagem: "amizade", remetenteId: 100, destinatarioId: 1 },
+      ];
+
+    const hashPassword = (password) => {
+        const salt = bcrypt.genSaltSync(10);
+        return bcrypt.hashSync(password, salt);
+    };
+
+    const usuarios = [
+        { nomeUsuario: "ZincoMagico", email: "zincomagico1@gmail.com", senha: "Zinco123!" },
+        { nomeUsuario: "FlavRanzinz", email: "flaviaranz2@outlook.com", senha: "Flavia2024@" },
+        { nomeUsuario: "GigaPipoca", email: "gigapipoqueiro3@yahoo.com", senha: "PipocaGiga#" },
+        { nomeUsuario: "AurelSofred", email: "aureliosof4@gmail.com", senha: "Aurelio!321" },
+        { nomeUsuario: "LunaViajant", email: "luna.viaj5@outlook.com", senha: "LunaVoa2024" },
+        { nomeUsuario: "JulietBizarr", email: "julietabiz6@gmail.com", senha: "Bizarra789@" },
+        { nomeUsuario: "PipocIncrvl", email: "pipoquinhain7@gmail.com", senha: "Pipoca123!" },
+        { nomeUsuario: "ZecaGaranh", email: "zeca.gar8@yahoo.com", senha: "Zeca2024#" },
+        { nomeUsuario: "GritoLunar", email: "gritolunar9@gmail.com", senha: "Lunar!456" },
+        { nomeUsuario: "BananaLoka", email: "bananaloka10@gmail.com", senha: "BananaLoka@" },
+        { nomeUsuario: "MegaZangado", email: "megazang11@outlook.com", senha: "ZangaMega2024" },
+        { nomeUsuario: "MestTartar", email: "mestretart12@gmail.com", senha: "TartaMestre!" },
+        { nomeUsuario: "VagaRadnt", email: "vagalume13@yahoo.com", senha: "Vagalume!" },
+        { nomeUsuario: "GuerrDraga", email: "draga.g14@gmail.com", senha: "Draga2024@" },
+        { nomeUsuario: "ChicoChicl", email: "chicochi15@outlook.com", senha: "Chiclete2024" },
+        { nomeUsuario: "KafkLouco", email: "kafkalouco16@gmail.com", senha: "Kafka@321" },
+        { nomeUsuario: "VortTremid", email: "vortextrem17@gmail.com", senha: "Vortex##" },
+        { nomeUsuario: "CrocSolar", email: "crocsolar18@yahoo.com", senha: "CrocodiloSun!" },
+        { nomeUsuario: "PoetCabelud", email: "poetcabel19@gmail.com", senha: "Poetisa123@" },
+        { nomeUsuario: "LadrEstrel", email: "ladraestre20@outlook.com", senha: "Estrela@@" },
+        { nomeUsuario: "NuvemUivan", email: "nuvemuiv21@gmail.com", senha: "Uivo2024@" },
+        { nomeUsuario: "ZeDoSaci", email: "zesaci22@gmail.com", senha: "Saci123!" },
+        { nomeUsuario: "MariaFumac", email: "mfumaca23@outlook.com", senha: "Fumaca2024@" },
+        { nomeUsuario: "VilaMaluca", email: "vilamaluca24@gmail.com", senha: "Maluca###" },
+        { nomeUsuario: "ToquMidas", email: "toquemidas25@yahoo.com", senha: "Midas2024!" },
+        { nomeUsuario: "JudasRevol", email: "judasrev26@gmail.com", senha: "Revolucao@" },
+        { nomeUsuario: "SombraRelu", email: "sombra27@outlook.com", senha: "Reluz123!" },
+        { nomeUsuario: "BichPregui", email: "preguica28@gmail.com", senha: "Pregui##" },
+        { nomeUsuario: "PompmFlutua", email: "pompom29@gmail.com", senha: "Flutua@" },
+        { nomeUsuario: "FocaVoador", email: "focavoad30@outlook.com", senha: "FocaVoa2024" },
+        { nomeUsuario: "DonaCatap", email: "donacat31@gmail.com", senha: "Dona2024!" },
+        { nomeUsuario: "ChavMestra", email: "chavemest32@yahoo.com", senha: "Chave@123" },
+        { nomeUsuario: "CachFumant", email: "cachfum33@gmail.com", senha: "FumaDog@" },
+        { nomeUsuario: "PocahLenda", email: "pocahlend34@gmail.com", senha: "Lenda2024!" },
+        { nomeUsuario: "LadrSonhos", email: "ladrosonho35@gmail.com", senha: "Sonho@@@" },
+        { nomeUsuario: "FocaSorris", email: "focasorr36@outlook.com", senha: "Sorriso!@" },
+        { nomeUsuario: "SaciEnvolv", email: "sacienv37@gmail.com", senha: "Envolve2024" },
+        { nomeUsuario: "EspelhQbrd", email: "espelho38@gmail.com", senha: "Quebra123@" },
+        { nomeUsuario: "DrgnFlyHigh", email: "dragon39@yahoo.com", senha: "FlyHigh!" },
+        { nomeUsuario: "MaripSorr", email: "maripsorr40@gmail.com", senha: "Mariposa2024@" },
+        { nomeUsuario: "UrsinhZen", email: "ursinho41@outlook.com", senha: "ZenUrs@" },
+        { nomeUsuario: "FeitPaz", email: "feitpaz42@gmail.com", senha: "PazPoder2024" },
+        { nomeUsuario: "CachRaiv", email: "cachraiv43@gmail.com", senha: "RaivaDog!" },
+        { nomeUsuario: "CurupVerm", email: "curupira44@gmail.com", senha: "Curup2024@" },
+        { nomeUsuario: "GalinhFeliz", email: "galinhafel45@yahoo.com", senha: "Feliz@@@" },
+        { nomeUsuario: "CobraDoMar", email: "cobramar46@gmail.com", senha: "Cobra2024!" },
+        { nomeUsuario: "PirataLouc", email: "piratalou47@outlook.com", senha: "Pirata##" },
+        { nomeUsuario: "VikingScan", email: "vikingscan48@gmail.com", senha: "Viking@321" },
+        { nomeUsuario: "CactoDanç", email: "cactodanca49@gmail.com", senha: "Danca@@" },
+        { nomeUsuario: "NinjaTosco", email: "ninjetos50@outlook.com", senha: "Ninja2024!" },
+        { nomeUsuario: "TatuBolado", email: "tatubolado51@gmail.com", senha: "Tatu#321" },
+        { nomeUsuario: "SapoCantor", email: "sapocant52@yahoo.com", senha: "CantaSapo@" },
+        { nomeUsuario: "MofoBrilh", email: "mofobrilh53@gmail.com", senha: "Brilha!@" },
+        { nomeUsuario: "GatoVeloz", email: "gatoveloz54@gmail.com", senha: "Veloz123#" },
+        { nomeUsuario: "ChuvaRison", email: "chuvariso55@hotmail.com", senha: "Chuva@" },
+        { nomeUsuario: "TrovFurios", email: "trovao56@gmail.com", senha: "Trovao2024" },
+        { nomeUsuario: "PatoGuerre", email: "patoguerr57@outlook.com", senha: "PatoWar!" },
+        { nomeUsuario: "ZumbiFofo", email: "zumbifofo58@gmail.com", senha: "FofoZumbi@" },
+        { nomeUsuario: "MacacTurbo", email: "macacturbo59@yahoo.com", senha: "Turbo123!" },
+        { nomeUsuario: "RatoSábio", email: "ratosabio60@gmail.com", senha: "Sabio2024@" },
+        { nomeUsuario: "CircoMagia", email: "circomagia61@gmail.com", senha: "Magia321#" },
+        { nomeUsuario: "PomboNinja", email: "pomboninja62@outlook.com", senha: "Pombo@@@" },
+        { nomeUsuario: "CangVoador", email: "cangvoa63@gmail.com", senha: "Canguru2024" },
+        { nomeUsuario: "FantGelado", email: "fantgel64@gmail.com", senha: "Gelado@321" },
+        { nomeUsuario: "BruxVoadra", email: "bruxvoa65@yahoo.com", senha: "Bruxa@@" },
+        { nomeUsuario: "MumiaDoida", email: "mumiadoida66@gmail.com", senha: "Mumia2024!" },
+        { nomeUsuario: "EcoRuidoso", email: "ecoruid67@gmail.com", senha: "Eco2024@" },
+        { nomeUsuario: "PanqDourad", email: "panqdour68@outlook.com", senha: "Panqueca@!" },
+        { nomeUsuario: "FenixAzula", email: "fenix69@gmail.com", senha: "Fenix!@" },
+        { nomeUsuario: "BotoRosado", email: "botorosado70@gmail.com", senha: "Boto2024@" },
+        { nomeUsuario: "DragGelado", email: "drggelado71@yahoo.com", senha: "Gelado123!" },
+        { nomeUsuario: "LoboGentil", email: "lobogentil72@gmail.com", senha: "Lobo@@" },
+        { nomeUsuario: "VacaGalact", email: "vacagal73@outlook.com", senha: "Galactica2024" },
+        { nomeUsuario: "FadaPerdida", email: "fadaperd74@gmail.com", senha: "FadaLost!" },
+        { nomeUsuario: "CoelhNerd", email: "coelhnerd75@gmail.com", senha: "NerdCoelho123" },
+        { nomeUsuario: "BoiSaltit", email: "boisalt76@gmail.com", senha: "SaltaBoi@" },
+        { nomeUsuario: "JacarCorrer", email: "jacarcorr77@yahoo.com", senha: "CorreJaca!" },
+        { nomeUsuario: "GirafFlash", email: "giraflash78@gmail.com", senha: "FlashGira@" },
+        { nomeUsuario: "OuriçNinja", email: "ouricninja79@outlook.com", senha: "Ninja2024" },
+        { nomeUsuario: "PinguRei", email: "pingurei80@gmail.com", senha: "ReiPingu@" },
+        { nomeUsuario: "TucanLend", email: "tucanlend81@gmail.com", senha: "Lenda321!" },
+        { nomeUsuario: "ArarDoida", email: "arardoida82@outlook.com", senha: "Doida2024@" },
+        { nomeUsuario: "FuracDoido", email: "furacdoido83@gmail.com", senha: "Furacao!@" },
+        { nomeUsuario: "CactoFeliz", email: "cactofeliz84@yahoo.com", senha: "Feliz@@!" },
+        { nomeUsuario: "ChifrDour", email: "chifdour85@gmail.com", senha: "Dourado123" },
+        { nomeUsuario: "LamaVoador", email: "lamavoad86@gmail.com", senha: "Lama@Voa" },
+        { nomeUsuario: "GansRisonh", email: "gansoriso87@outlook.com", senha: "Riso2024@" },
+        { nomeUsuario: "ZorroUrbn", email: "zorrou88@gmail.com", senha: "ZorroMan!" },
+        { nomeUsuario: "CavlNebul", email: "cavlnebul89@gmail.com", senha: "Nebula123" },
+        { nomeUsuario: "PavãoDoido", email: "pavaodoido90@yahoo.com", senha: "Pavao#@" },
+        { nomeUsuario: "LeoaDancnt", email: "leoadanc91@gmail.com", senha: "Danca321@" },
+        { nomeUsuario: "KoalSonol", email: "koalsono92@gmail.com", senha: "SonoKoala!" },
+        { nomeUsuario: "TatuFeliz", email: "tatufeliz93@outlook.com", senha: "FelizTatu@" },
+        { nomeUsuario: "SereiaTech", email: "sereiatech94@gmail.com", senha: "Tech@123" },
+        { nomeUsuario: "FantArctic", email: "fantart95@gmail.com", senha: "Arctic!@" },
+        { nomeUsuario: "GeloVoador", email: "gelovoad96@yahoo.com", senha: "VoaGelo321" },
+        { nomeUsuario: "LetrFant", email: "letrfant97@gmail.com", senha: "LetraFanta@" },
+        { nomeUsuario: "NuvmAzula", email: "nuvmazul98@gmail.com", senha: "Azul2024@" },
+        { nomeUsuario: "VentoRoxo", email: "ventoroxo99@gmail.com", senha: "Vento!!!" },
+        { nomeUsuario: "SolFurioso", email: "solfur100@outlook.com", senha: "Sol2024🔥" }
+      ];      
+
+    const usuariosComSenhaCriptografada = usuarios.map(usuario => ({
+        nomeUsuario: usuario.nomeUsuario,
+        email: usuario.email,
+        senha: hashPassword(usuario.senha),
+        anonimo: false,
+      }));
+
+    await prisma.usuario.createMany({
+        data: usuariosComSenhaCriptografada
+      });
+
+    await prisma.confissao.createMany({
+        data: confissoes
+    });
+
+console.log('Dados inseridos com sucesso!');
+}   
+
+main()
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
