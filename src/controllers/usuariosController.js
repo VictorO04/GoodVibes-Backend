@@ -139,3 +139,68 @@ export const deleteUsuario = async (req, res) => {
 
     }
 }
+
+export const updateUsuario = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const data = req.body;
+
+        if (isNaN(id) || id <= 0) {
+            return res.status(400).json({
+                total: 0,
+                mensagem: "O id precisa ser válido"
+            });
+        }
+
+        const usuarioExistente = await usuariosModel.findUsuarioById(id);
+
+        if (!usuarioExistente) {
+            return res.status(404).json({
+                total: 0,
+                mensagem: `Nenhum usuário com o id ${id} encontrado`
+            });
+        }
+
+        const { nomeUsuario, email, senha, anonimo } = data;
+
+        let hashSenha;
+        if (senha) {
+            if (senha.length < 6) {
+                return res.status(400).json({
+                    total: 0,
+                    mensagem: "A senha deve ter pelo menos 6 caracteres"
+                });
+            }
+            hashSenha = await bcrypt.hash(senha, 10);
+        }
+
+        let nomeFinal = nomeUsuario ?? usuarioExistente.nomeUsuario;
+        if (anonimo === true) {
+            const emojis = ["😶", "👤", "🕵️", "👽", "🐧", "🦊", "🐼", "🐸", "🐵", "🐱"];
+            nomeFinal = emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        const dadosAtualizados = {
+            nomeUsuario: nomeFinal,
+            email: email ?? usuarioExistente.email,
+            senha: hashSenha ?? usuarioExistente.senha,
+            anonimo: anonimo ?? usuarioExistente.anonimo
+        };
+
+        const usuarioAtualizado = await usuariosModel.updateUsuario(id, dadosAtualizados);
+
+        const { senha: senhaRemovida, ...usuarioSemSenha } = usuarioAtualizado;
+
+        res.status(200).json({
+            total: 1,
+            mensagem: `Usuário com id ${id} atualizado com sucesso`,
+            usuario: usuarioSemSenha
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            erro: "Erro interno de servidor",
+            detalhes: error.message
+        });
+    }
+};
