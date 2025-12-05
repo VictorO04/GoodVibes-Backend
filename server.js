@@ -1,10 +1,14 @@
 import express from 'express';
+import cors from 'cors'
 import dotenv from 'dotenv';
 import confissoesRoutes from "./src/routes/confissoesRoutes.js";
 import usuariosRoutes from "./src/routes/usuariosRoutes.js";
 
 const app = express();
+const cors = require('cors')
+
 app.use(express.json());
+app.use(cors(corsOptions));
 
 dotenv.config();
 const serverPort = process.env.PORT;
