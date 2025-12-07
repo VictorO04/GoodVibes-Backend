@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 
 async function main() {
 
+  //Dados que serão enviados para a tabela de confissões
     const confissoes = [
   { mensagem: "Às vezes fico sem saber por onde começar, mas sigo tentando com esperança.", tipoMensagem: "motivacional", remetenteId: 1, destinatarioId: 2 },
   { mensagem: "Você é a pessoa mais importante da minha vida!", tipoMensagem: "romantica", remetenteId: 2, destinatarioId: 3 },
@@ -121,11 +122,13 @@ async function main() {
   { mensagem: "Você foi e sempre será uma parte importante da minha vida.", tipoMensagem: "amizade", remetenteId: 100, destinatarioId: 1 },
 ];
     
+    //Criação do hash da senha baseada nas senhas do seed
     const hashPassword = (password) => {
         const salt = bcrypt.genSaltSync(10);
         return bcrypt.hashSync(password, salt);
     };
 
+    //Dados que serão enviados para a tabela de usuários
     const usuarios = [
         { nomeUsuario: "ZincoMagico", email: "zincomagico1@gmail.com", senha: "Zinco123!" },
         { nomeUsuario: "FlavRanzinz", email: "flaviaranz2@outlook.com", senha: "Flavia2024@" },

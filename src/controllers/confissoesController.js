@@ -1,9 +1,11 @@
 import * as confissoesModel from "../models/confissoesModel.js";
 
+//get all confissões
 export const getAllConfissoes = async (req, res) => {
     try {
         const confissoes = await confissoesModel.findAllConfissoes();
 
+        //mensagem de status 200 com operador ternário para verificar se há dados no banco
         res.status(200).json({
             total: confissoes.length,
             mensagem: confissoes.length === 0
@@ -21,10 +23,12 @@ export const getAllConfissoes = async (req, res) => {
     }
 }
 
+//get confissão by id
 export const getConfissaoByID = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
 
+        //verica se é um número, se não for, erro 400
         if (isNaN(id) || id <= 0) {
             return res.status(400).json({
                 total: 0,
@@ -34,7 +38,7 @@ export const getConfissaoByID = async (req, res) => {
 
         const confissao = await confissoesModel.findConfissaoById(id);
 
-
+        //verica existe com o id digitado, se não, erro 404
         if (!confissao) {
             return res.status(404).json({
                 total: 0,
@@ -42,6 +46,7 @@ export const getConfissaoByID = async (req, res) => {
             });
         }
 
+        //mensagem de sucesso
         res.status(200).json({
             total: 1,
             mensagem: `Confissão com o id ${id} encontrada`,
@@ -57,11 +62,14 @@ export const getConfissaoByID = async (req, res) => {
     }
 }
 
+//create confissão
 export const createConfissao = async (req, res) => {
     try {
+        //constantes para puxar body
         const data = req.body;
         const { mensagem, tipoMensagem, remetenteId, destinatarioId } = data;
 
+        //verificação de campos obrigatórios, se faltar campos, erro 400
         const camposObrigatorios = ["mensagem", "tipoMensagem", "remetenteId", "destinatarioId"];
 
         const faltando = camposObrigatorios.filter((campo) => !data[campo] && data[campo] !== 0);
@@ -73,6 +81,9 @@ export const createConfissao = async (req, res) => {
             });
         }
 
+        /*se a mensagem é diferente de undefined, irá pegar todas as palavras proibidas que estão no .env para analisar.
+        Caso haja algo proibido na mensagem, erro 400
+        */
         if (mensagem !== undefined) {
             const decodificado = Buffer.from(process.env.PALAVRAS_PROIBIDAS_BASE64, "base64").toString("utf-8");
             const palavrasProibidas = decodificado.split(",").map(p => p.trim().toLowerCase());
@@ -87,7 +98,8 @@ export const createConfissao = async (req, res) => {
                 });
             }
         }
-
+        
+        //se o tipo da mensagem é diferente de undefined, irá definir os tipos válidos, se digitar algum tipo inválido, erro 400
         if (tipoMensagem !== undefined) {
             const tiposValidos = ["romantica", "amizade", "motivacional", "comedia", "reflexiva"];
         
@@ -106,6 +118,7 @@ export const createConfissao = async (req, res) => {
             destinatarioId: Number(destinatarioId)
         });
 
+        //mensagem de sucesso
         res.status(201).json({
             total: 1,
             mensagem: "Confissão criada com sucesso",
@@ -121,12 +134,22 @@ export const createConfissao = async (req, res) => {
     }
 }
 
+//delete confissão
 export const deleteConfissao = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
 
+        //verica se é um número, se não for, erro 400
+        if (isNaN(id) || id <= 0) {
+            return res.status(400).json({
+                total: 0,
+                mensagem: "O id precisa ser válido"
+            });
+        }
+
         const confissaoExiste = await confissoesModel.findConfissaoById(id);
 
+        //verica existe com o id digitado, se não, erro 404
         if (!confissaoExiste) {
             return res.status(404).json({
                 total: 0,
@@ -136,6 +159,7 @@ export const deleteConfissao = async (req, res) => {
 
         await confissoesModel.deleteConfissao(id);
 
+        //mensagem de sucesso
         res.status(200).json({
             mensagem: "Confissão deletada com sucesso",
             confissao: confissaoExiste
@@ -150,14 +174,25 @@ export const deleteConfissao = async (req, res) => {
     }
 }
 
+//update confissão
 export const updateConfissao = async (req, res) => {
     try {
+        //constantes para puxar body e id
         const data = req.body;
         const { mensagem, tipoMensagem } = data;
         const id = parseInt(req.params.id);
 
+        //verica se é um número, se não for, erro 400
+        if (isNaN(id) || id <= 0) {
+            return res.status(400).json({
+                total: 0,
+                mensagem: "O id precisa ser válido"
+            });
+        }
+
         const confissaoExiste = await confissoesModel.findConfissaoById(id);
 
+        //verica existe com o id digitado, se não, erro 404
         if (!confissaoExiste) {
             return res.status(404).json({
                 total: 0,
@@ -165,6 +200,9 @@ export const updateConfissao = async (req, res) => {
             });
         }
 
+        /*se a mensagem é diferente de undefined, irá pegar todas as palavras proibidas que estão no .env para analisar.
+        Caso haja algo proibido na mensagem, erro 400
+        */
         if (mensagem !== undefined) {
             const decodificado = Buffer.from(process.env.PALAVRAS_PROIBIDAS_BASE64, "base64").toString("utf-8");
             const palavrasProibidas = decodificado.split(",").map(p => p.trim().toLowerCase());
@@ -180,6 +218,7 @@ export const updateConfissao = async (req, res) => {
             }
         }
 
+        //se o tipo da mensagem é diferente de undefined, irá definir os tipos válidos, se digitar algum tipo inválido, erro 400
         if (tipoMensagem !== undefined) {
             const tiposValidos = ["romantica", "amizade", "motivacional", "comedia", "reflexiva"];
         
@@ -193,6 +232,7 @@ export const updateConfissao = async (req, res) => {
 
         const confissaoAtualizada = await confissoesModel.updateConfissao(id, data);
 
+        //mensagem de sucesso
         res.status(200).json({
             total: 1,
             mensagem: "Confissão atualizada com sucesso",
@@ -208,10 +248,12 @@ export const updateConfissao = async (req, res) => {
     }
 }
 
+//get confissões by tipo
 export const getConfissaoByTipo = async (req, res) => {
     try {
         const tipo = req.params.tipo.toLowerCase();
 
+        //define tipos válidos, se não, erro 400
         const tiposValidos = ["romantica", "amizade", "motivacional", "comedia", "reflexiva"];
 
         if (!tiposValidos.includes(tipo)){
@@ -223,6 +265,7 @@ export const getConfissaoByTipo = async (req, res) => {
 
         const confissoes = await confissoesModel.findConfissoesByTipo(tipo);
 
+        //mensagem de sucesso
         res.status(200).json({
             total: confissoes.length,
             mensagem: confissoes.length === 0
@@ -239,10 +282,12 @@ export const getConfissaoByTipo = async (req, res) => {
     }
 }
 
+//get confissões anônimas
 export const getConfissoesAnonimas = async (req, res) => {
     try {
         const confissoes = await confissoesModel.findConfissoesAnonimas();
 
+        //mensagem de sucesso
         res.status(200).json({
             total: confissoes.length,
             mensagem: confissoes.length === 0
