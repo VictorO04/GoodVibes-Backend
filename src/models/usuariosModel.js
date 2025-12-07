@@ -30,9 +30,19 @@ export const createUsuario = async (data) => {
 
 //deleta o usuário
 export const deleteUsuario = async (id) => {
-    return await prisma.usuario.delete({
-        where: { id: Number(id) }
+    return await prisma.confissao.deleteMany({
+    where: {
+        OR: [
+            { remetenteId: id },
+            { destinatarioId: id }
+        ]
+    }
     });
+
+await prisma.usuario.delete({
+  where: { id }
+});
+
 }
 
 //atualiza o usuário
